@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+//- pug index.pug -w
+- const rows = 100;
+- const columns = 100;
+- const colors = 3;
+<html lang="en" style="--rows: #{rows}; --columns: #{columns}">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta name="description" content="A drawing canvas made with pure HTML &amp; CSS &ndash; no JavaScript." />
+	<meta name="repository" content="https://github.com/BenjaminAster/CSS-Canvas" />
+
+	<title>CSS Drawing Canvas</title>
+
+	<link rel="icon" href="./assets/icon.svg" />
+
+	<link rel="stylesheet" href="./main.css" />
+
+	<style>
+		- const sourceMap = { version: 3, sources: ["./index.pug"], mappings: "" };
+		| /*# sourceMappingURL=data:application/json;charset=utf-8,#{encodeURIComponent(JSON.stringify(sourceMap))} */
+	</style>
+</head>
+
+<body>
+	//- ._1 1
+	//- ._2 2	
+	//- .test test
+
+	<div class="color-chooser">
+		each _, index in Array(colors)
+			<label class="color-#{index}">
+				| color #{index}
+				<input type="radio" name="color"  !{index === 0 ? "checked" : ""} />
+			</label>
+		//- /each
+	</div>
+
+	<div class="canvas">
+		for _, row in Array(rows)
+			for _, column in Array(columns)
+				<div class="pixel">
+					//- for _, color in colors
+					//- 	<div class="color #{color}"></div>
+					//- //- /for
+				</div>
+			//- /for
+		//- /for
+	</div>
+
+	<div class="color-settings">
+		- const defaultColors = ["white", "red", "lime"];
+		for _, index in Array(colors)
+			- const style = `:root { --color-${index}:\n${defaultColors[index]}\n}`;
+			<div class="style-container">
+				<style contenteditable="true">!{style}</style>
+			</div>
+	</div>
+</body>
+
+</html>
