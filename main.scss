@@ -5,10 +5,6 @@ pug index.pug -w
 sass main.scss:main.css -w
 */
 
-// $rows: 100;
-// $columns: 100;
-
-// $colors: ("white", "red", "lime");
 $colors: 3;
 
 @function repeat-string($character, $n){
@@ -23,72 +19,94 @@ $colors: 3;
 	color-scheme: dark;
 	--pixel-size: 4px;
 	block-size: 100%;
+	user-select: none;
+	// --color-option-width: 10rem;
 
-	--color-0: white;
-	--color-1: white;
-	--color-2: white;
+	--color-0: initial;
+	--color-1: initial;
+	--color-2: initial;
 
-	// --rows: #{$rows};
-	// --columns: #{$columns};
+	--columns: initial;
+	--rows: initial;
+
+	--canvas-border-width: 1px;
+
+	--background: #111;
 }
 
 body {
 	color: white;
-	background-color: black;
+	background-color: var(--background);
 	min-block-size: 100%;
 	margin: 0;
 	box-sizing: border-box;
 	font-family: system-ui, sans-serif;
 	display: flex;
 	flex-direction: column;
+	align-items: center;
 }
 
-// .test {
-// 	--play-state-1: paused;
-// 	--play-state-2: paused;
+:where(label) {
+	cursor: pointer;
+}
 
-// 	animation: 0ms linear 1ms forwards var(--play-state-1) color-red, 0ms linear 1ms forwards var(--play-state-2) color-lime;
+:where(h1, p) {
+	margin: 0;
+}
 
-// 	@keyframes color-red {
-// 		to {
-// 			background-color: red;
-// 		}
-// 	}
+:where(h1, h2) {
+	font-weight: 600;
+}
 
-// 	@keyframes color-lime {
-// 		to {
-// 			background-color: lime;
-// 		}
-// 	}
-// }
+.info-container {
+	inline-size: 100%;
+	text-align: center;
+	// padding-inline: 5rem;
+	box-sizing: border-box;
+	background-color: var(--background);
+	// isolation: isolate;
+	z-index: 1;
+}
 
-// ._1:hover ~ .test {
-// 	--play-state-1: running;
-// }
-
-// ._2:hover ~ .test {
-// 	--play-state-2: running;
-// }
-
-.canvas {
-	// background-color: #8884;
-	display: grid;
-	grid-template-columns: repeat(var(--columns), 1fr);
-	margin: 1rem;
+.info {
+	margin-block-end: 1rem;
+	// margin-inline: 5rem;
+	margin-inline: auto;
+	display: flex;
+	flex-direction: column;
+	gap: .6rem;
 	inline-size: fit-content;
-	// padding: 1px;
-	border: 1px solid #8884;
+	padding-block: .4rem .8rem;
+	padding-inline: 1rem;
+	border: 2px solid dodgerblue;
+	border-block-start: none;
+	border-end-start-radius: .5rem;
+	border-end-end-radius: .5rem;
+	background-color: #1E90FF33;
+}
+
+.canvas-container {
+	background-color: var(--background);
+	inline-size: 100%;
+	z-index: 1;
+
+	display: flex;
+	justify-content: center;
+
+	.canvas {
+		display: grid;
+		grid-template-columns: repeat(var(--columns), 1fr);
+		inline-size: fit-content;
+		border: var(--canvas-border-width) solid #8884;
+	}
 }
 
 .pixel {
 	inline-size: var(--pixel-size);
 	block-size: var(--pixel-size);
-	// --color: transparent;
-	// background-color: var(--color);
 	$animation-string: "";
 
 	@for $index from 0 to $colors {
-		// $color: list.nth($colors, $index);
 		--play-state-color-#{$index}: paused;
 		@if ($index >= 1) {
 			$animation-string: $animation-string + ", ";
@@ -97,75 +115,144 @@ body {
 
 		@keyframes color-#{$index} {
 			to {
-				// --color: #{$color};
 				border-radius: 50%;
-				// background-color: var(--color);
-				// box-shadow: 0 0 0 2px var(--color);
-				// background-color: #{$color};
-				// box-shadow: 0 0 0 2px #{$color};
 				background-color: var(--color-#{$index});
 				box-shadow: 0 0 0 2px var(--color-#{$index});
 			}
 		}
 
-		.color-chooser:has(> label.color-#{$index} > input[type=radio]:checked) ~ .canvas:active &:hover {
-			// color: lime;
+		input#color-#{$index}[type=radio]:checked ~ .canvas-container .canvas:active &:hover {
 			--play-state-color-#{$index}: running;
 		}
 	}
 	animation: #{$animation-string};
 }
 
-.color-settings {
-	padding: 1rem;
+input[type=radio][name="color"] {
+	position: absolute;
+	opacity: 0;
+	pointer-events: none;
+}
+
+@for $index from 0 to $colors {
+	.color-chooser > label[for="color-#{$index}"] {
+		background-image: #{"-moz-element(#color-#{$index}-style)"};
+		background-image: #{"element(#color-#{$index}-style)"};
+		--color: var(--color-#{$index});
+	}
+
+	input[type=radio][name="color"]#color-#{$index}:checked ~ .color-chooser > label[for="color-#{$index}"] {
+		// border-color: var(--color);
+		// border-width: 3px;
+		box-shadow: inset 0 0 0 3px var(--color);
+
+		&::before {
+			// background-color: var(--color);
+
+			box-shadow: inset 0 0 0 1rem var(--color);
+		}
+	}
+	
+	input[type=radio][name="color"]#color-#{$index}:focus-visible ~ .color-chooser > label[for="color-#{$index}"] {
+		outline: 2px dotted #fffa;
+		outline-offset: -7px;
+	}
+}
+
+.color-chooser, .color-settings-container {
+	--line-height: 3rem;
+	--block-size: var(--line-height);
+}
+
+.color-chooser, .color-settings {
 	display: flex;
-	flex-direction: column;
 	gap: 1rem;
+}
 
-	.style-container {
-		font-size: 2rem;
-		overflow: hidden;
-		--line-height: 1.5em;
-		block-size: var(--line-height);
-		line-height: var(--line-height);
-		border-radius: .3rem;
+.color-settings-container .inner-style-container, .color-chooser > label {
+	font-size: 2rem;
+	overflow: hidden;
+	block-size: var(--block-size);
+	line-height: var(--line-height);
+	// inline-size: 15rem;
+	border-radius: .3rem;
+}
 
-		> style {
-			margin-block-start: calc(var(--line-height) * -1);
+.color-chooser {
+	> label {
+		display: flex;
+		align-items: center;
+		border-radius: .6rem;
+		padding: .7rem;
+		box-sizing: border-box;
+		inline-size: 15rem;
+		// border: 0px solid var(--color);
+		box-shadow: inset 0 0 0 0px var(--color);
+		transition: box-shadow .3s;
+
+		&::before {
+			content: "";
 			display: block;
-			white-space: pre;
-			overflow: hidden;
-			padding-inline: .3rem;
-			block-size: 10rem;
-
-			&:focus {
-				outline: none;
-				background-color: #8883;
-			}
+			// border-radius: .1em;
+			border-radius: 50%;
+			block-size: 100%;
+			// block-size: 1.5rem;
+			aspect-ratio: 1;
+			box-sizing: border-box;
+			// border: 3px solid var(--color);
+			box-shadow: inset 0 0 0 3px var(--color);
+			transition: box-shadow .3s;
 		}
 	}
 }
 
-// .pixel:has(#{repeat-string("+ .pixel", $columns * 2 - 2)} + .pixel:hover),
-// .pixel:has(#{repeat-string("+ .pixel", $columns * 2 - 1)} + .pixel:hover),
-// .pixel:has(#{repeat-string("+ .pixel", $columns * 2 + 0)} + .pixel:hover),
-// .pixel:has(#{repeat-string("+ .pixel", $columns - 3)} + .pixel:hover),
-// .pixel:has(#{repeat-string("+ .pixel", $columns - 2)} + .pixel:hover),
-// .pixel:has(#{repeat-string("+ .pixel", $columns - 1)} + .pixel:hover),
-// .pixel:has(#{repeat-string("+ .pixel", $columns + 0)} + .pixel:hover),
-// .pixel:has(#{repeat-string("+ .pixel", $columns + 1)} + .pixel:hover),
-// .pixel:hover + .pixel + .pixel,
-// .pixel:hover + .pixel,
-// .pixel:hover,
-// .pixel:has(+ .pixel:hover),
-// .pixel:has(+ .pixel + .pixel:hover),
-// .pixel:hover#{repeat-string(" + .pixel", $columns - 2)},
-// .pixel:hover#{repeat-string(" + .pixel", $columns - 1)},
-// .pixel:hover#{repeat-string(" + .pixel", $columns + 0)},
-// .pixel:hover#{repeat-string(" + .pixel", $columns + 1)},
-// .pixel:hover#{repeat-string(" + .pixel", $columns + 2)},
-// .pixel:hover#{repeat-string(" + .pixel", $columns * 2 - 1)},
-// .pixel:hover#{repeat-string(" + .pixel", $columns * 2 + 0)},
-// .pixel:hover#{repeat-string(" + .pixel", $columns * 2 + 1)} {
-// 	--play-state: running;
-// }
+.color-settings-container {
+	.color-settings {
+		--distance: calc(var(--canvas-border-width) * 2 + var(--rows) * var(--pixel-size));
+
+		.outer-style-container {
+			box-sizing: border-box;
+			// padding-inline-start: 2.5em;
+			--margin-inline-start: 2.5em;
+			margin-inline-start: var(--margin-inline-start);
+			inline-size: calc(15rem - var(--margin-inline-start));
+
+			outline: 2px solid #8883;
+			outline-offset: -2px;
+			border-radius: .3rem;
+
+			&:focus-within {
+				background-color: #8883;
+			}
+		}
+
+		.middle-style-container {
+
+			@supports #{"not ((background: element(#a)) or (background: -moz-element(#a)))"} {
+				// -webkit-box-reflect: above calc(var(--distance) - var(--block-size));
+				-webkit-box-reflect: above calc(var(--distance) + var(--block-size));
+
+				.inner-style-container {
+					// -webkit-box-reflect: below;
+					-webkit-box-reflect: above;
+				}
+			}
+		}
+
+		.inner-style-container {
+			> style {
+				box-sizing: border-box;
+				margin-block-start: calc(var(--line-height) * -1);
+				display: block;
+				white-space: pre;
+				overflow: hidden;
+				padding-inline: .3em;
+				block-size: 10rem;
+	
+				&:focus {
+					outline: none;
+				}
+			}
+		}
+	}
+}

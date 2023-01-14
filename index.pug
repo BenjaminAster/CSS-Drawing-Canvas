@@ -17,45 +17,54 @@
 
 	<link rel="stylesheet" href="./main.css" />
 
-	<style>
-		- const sourceMap = { version: 3, sources: ["./index.pug"], mappings: "" };
-		| /*# sourceMappingURL=data:application/json;charset=utf-8,#{encodeURIComponent(JSON.stringify(sourceMap))} */
-	</style>
+	- const sourceMap = { version: 3, sources: ["./index.pug"], mappings: "" };
+	- const sourceMappingURL = `data:application/json,${encodeURIComponent(JSON.stringify(sourceMap))}`;
+	<style> /*# sourceMappingURL=!{sourceMappingURL} */ </style>
 </head>
 
 <body>
-	//- ._1 1
-	//- ._2 2	
-	//- .test test
+	<div class="info-container">
+		<div class="info">
+			<h1>CSS Drawing Canvas</h1>
+
+			<p>There is no JavaScript on this page. All the logic made 100% using pure HTML & CSS.</p>
+		</div>
+	</div>
+
+	each _, index in Array(colors)
+		<input type="radio" name="color" id="color-#{index}" !{index === 0 ? "checked" : ""} />
+	//- /each
 
 	<div class="color-chooser">
 		each _, index in Array(colors)
-			<label class="color-#{index}">
-				| color #{index}
-				<input type="radio" name="color"  !{index === 0 ? "checked" : ""} />
-			</label>
+			<label for="color-#{index}"></label>
 		//- /each
 	</div>
 
-	<div class="canvas">
-		for _, row in Array(rows)
-			for _, column in Array(columns)
-				<div class="pixel">
-					//- for _, color in colors
-					//- 	<div class="color #{color}"></div>
-					//- //- /for
-				</div>
+	<div class="canvas-container">
+		<div class="canvas">
+			for _, row in Array(rows)
+				for _, column in Array(columns)
+					<div class="pixel"></div>
+				//- /for
 			//- /for
-		//- /for
+		</div>
 	</div>
 
-	<div class="color-settings">
-		- const defaultColors = ["white", "red", "lime"];
-		for _, index in Array(colors)
-			- const style = `:root { --color-${index}:\n${defaultColors[index]}\n}`;
-			<div class="style-container">
-				<style contenteditable="true">!{style}</style>
-			</div>
+	<div class="color-settings-container">
+		<div class="color-settings">
+			- const defaultColors = ["white", "red", "lime"];
+			for _, index in Array(colors)
+				- const style = `:root { --color-${index}:\n${defaultColors[index]}`;
+				<div class="outer-style-container">
+					<div class="middle-style-container">
+						<div class="inner-style-container" id="color-#{index}-style">
+							<style contenteditable="true">!{style}</style>
+						</div>
+					</div>
+				</div>
+			//- /for
+		</div>
 	</div>
 </body>
 
