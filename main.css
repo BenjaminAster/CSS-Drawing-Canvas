@@ -2,10 +2,20 @@
 pug index.pug -w
 sass main.scss:main.css -w
 */
+@layer global {
+  label {
+    cursor: pointer;
+  }
+  h1, h2, h3, p, ul {
+    margin: 0;
+  }
+  h1, h2, h3 {
+    font-weight: 600;
+  }
+}
 :root {
   color-scheme: dark;
   --pixel-size: 4px;
-  block-size: 100%;
   user-select: none;
   --color-0: initial;
   --color-1: initial;
@@ -13,55 +23,77 @@ sass main.scss:main.css -w
   --columns: initial;
   --rows: initial;
   --canvas-border-width: 1px;
+  --canvas-margin-block: 1rem;
+  --edit-colors-heading-height: 3rem;
+  --edit-colors-margin-left: 2.5rem;
+  --colors-line-height: 3rem;
+  --colors-font-size: 2rem;
   --background: #111;
+  color: white;
+  -webkit-text-size-adjust: none;
+  text-size-adjust: none;
 }
 
+@media (prefers-color-scheme: light) {
+  :root {
+    color-scheme: light;
+    --background: white;
+    color: black;
+  }
+}
 body {
-  color: white;
   background-color: var(--background);
-  min-block-size: 100%;
+  min-block-size: 100dvb;
   margin: 0;
   box-sizing: border-box;
   font-family: system-ui, sans-serif;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-:where(label) {
-  cursor: pointer;
-}
-
-:where(h1, p) {
-  margin: 0;
-}
-
-:where(h1, h2) {
-  font-weight: 600;
-}
-
-.info-container {
-  inline-size: 100%;
-  text-align: center;
-  box-sizing: border-box;
-  background-color: var(--background);
-  z-index: 1;
+  padding: 1rem;
+  gap: 1rem;
+  display: grid;
+  grid-template-areas: "aside main";
 }
 
 .info {
-  margin-block-end: 1rem;
-  margin-inline: auto;
+  background-color: var(--background);
+  flex-basis: 20rem;
+  flex-grow: 1;
+  box-sizing: border-box;
+  z-index: 1;
+  grid-area: aside;
+  max-inline-size: 20rem;
+}
+.info > .inner-container {
+  background-color: rgba(30, 144, 255, 0.2);
+  padding: 1rem;
+  box-sizing: border-box;
+  min-block-size: 100%;
+  border-radius: 1rem;
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
-  inline-size: fit-content;
-  padding-block: 0.4rem 0.8rem;
-  padding-inline: 1rem;
-  border: 2px solid dodgerblue;
-  border-block-start: none;
-  border-end-start-radius: 0.5rem;
-  border-end-end-radius: 0.5rem;
-  background-color: rgba(30, 144, 255, 0.2);
+  gap: 0.8rem;
+}
+
+.mobile-warning {
+  background-color: rgba(255, 34, 68, 0.3333333333);
+  background-color: color-mix(in srgb, #ff2244 30%, var(--background));
+  padding: 1rem;
+  border-radius: 1rem;
+}
+
+@media (hover: hover) {
+  .mobile-warning {
+    display: none;
+  }
+}
+main {
+  flex-grow: 10000;
+  flex-basis: auto;
+  grid-area: main;
+  display: grid;
+  place-items: center;
+}
+main > .inner-container {
+  contain: paint;
 }
 
 .canvas-container {
@@ -70,14 +102,24 @@ body {
   z-index: 1;
   display: flex;
   justify-content: center;
+  position: relative;
 }
 .canvas-container .canvas {
   display: grid;
   grid-template-columns: repeat(var(--columns), 1fr);
   inline-size: fit-content;
   border: var(--canvas-border-width) solid rgba(136, 136, 136, 0.2666666667);
+  margin-block: var(--canvas-margin-block);
 }
 
+@media (max-width: 70rem) {
+  body {
+    grid-template-areas: "aside" "main";
+  }
+  .info {
+    max-inline-size: revert;
+  }
+}
 .pixel {
   inline-size: var(--pixel-size);
   block-size: var(--pixel-size);
@@ -178,8 +220,7 @@ input[type=radio][name=color]#color-2:focus-visible ~ .color-chooser > label[for
 }
 
 .color-chooser, .color-settings-container {
-  --line-height: 3rem;
-  --block-size: var(--line-height);
+  --height: var(--colors-line-height);
 }
 
 .color-chooser, .color-settings {
@@ -188,13 +229,17 @@ input[type=radio][name=color]#color-2:focus-visible ~ .color-chooser > label[for
 }
 
 .color-settings-container .inner-style-container, .color-chooser > label {
-  font-size: 2rem;
+  font-size: var(--colors-font-size);
   overflow: hidden;
-  block-size: var(--block-size);
-  line-height: var(--line-height);
+  block-size: var(--height);
+  line-height: var(--colors-line-height);
   border-radius: 0.3rem;
 }
 
+.color-chooser {
+  z-index: 1;
+  position: relative;
+}
 .color-chooser > label {
   display: flex;
   align-items: center;
@@ -204,6 +249,8 @@ input[type=radio][name=color]#color-2:focus-visible ~ .color-chooser > label[for
   inline-size: 15rem;
   box-shadow: inset 0 0 0 0px var(--color);
   transition: box-shadow 0.3s;
+  background-repeat: no-repeat;
+  background-position-x: var(--edit-colors-margin-left);
 }
 .color-chooser > label::before {
   content: "";
@@ -216,14 +263,28 @@ input[type=radio][name=color]#color-2:focus-visible ~ .color-chooser > label[for
   transition: box-shadow 0.3s;
 }
 
+.edit-colors-heading {
+  block-size: var(--edit-colors-heading-height);
+  background-color: var(--background);
+  padding-inline-start: var(--edit-colors-margin-left);
+  z-index: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.color-settings-container {
+  counter-reset: color-index;
+}
 .color-settings-container .color-settings {
-  --distance: calc(var(--canvas-border-width) * 2 + var(--rows) * var(--pixel-size));
+  --distance: calc((var(--canvas-margin-block) + var(--canvas-border-width)) * 2 + var(--edit-colors-heading-height) + var(--rows) * var(--pixel-size));
 }
 .color-settings-container .color-settings .outer-style-container {
   box-sizing: border-box;
-  --margin-inline-start: 2.5em;
-  margin-inline-start: var(--margin-inline-start);
-  inline-size: calc(15rem - var(--margin-inline-start));
+  position: relative;
+  margin-inline-start: var(--edit-colors-margin-left);
+  inline-size: calc(15rem - var(--edit-colors-margin-left));
   outline: 2px solid rgba(136, 136, 136, 0.2);
   outline-offset: -2px;
   border-radius: 0.3rem;
@@ -231,9 +292,23 @@ input[type=radio][name=color]#color-2:focus-visible ~ .color-chooser > label[for
 .color-settings-container .color-settings .outer-style-container:focus-within {
   background-color: rgba(136, 136, 136, 0.2);
 }
+.color-settings-container .color-settings .outer-style-container::before {
+  content: counter(color-index) ".";
+  counter-increment: color-index;
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: calc(-1 * var(--edit-colors-margin-left));
+  inline-size: var(--edit-colors-margin-left);
+  font-size: var(--colors-font-size);
+  line-height: var(--colors-line-height);
+  text-align: end;
+  padding-inline-end: 0.2em;
+  box-sizing: border-box;
+  opacity: 0.6;
+}
 @supports not ((background: element(#a)) or (background: -moz-element(#a))) {
   .color-settings-container .color-settings .middle-style-container {
-    -webkit-box-reflect: above calc(var(--distance) + var(--block-size));
+    -webkit-box-reflect: above calc(var(--distance) + var(--height));
   }
   .color-settings-container .color-settings .middle-style-container .inner-style-container {
     -webkit-box-reflect: above;
@@ -241,12 +316,11 @@ input[type=radio][name=color]#color-2:focus-visible ~ .color-chooser > label[for
 }
 .color-settings-container .color-settings .inner-style-container > style {
   box-sizing: border-box;
-  margin-block-start: calc(var(--line-height) * -1);
+  margin-block-start: calc(var(--colors-line-height) * -1);
   display: block;
   white-space: pre;
   overflow: hidden;
   padding-inline: 0.3em;
-  block-size: 10rem;
 }
 .color-settings-container .color-settings .inner-style-container > style:focus {
   outline: none;

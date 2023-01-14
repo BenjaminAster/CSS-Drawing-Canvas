@@ -7,9 +7,10 @@
 
 <head>
 	<meta charset="UTF-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content" />
 	<meta name="description" content="A drawing canvas made with pure HTML &amp; CSS &ndash; no JavaScript." />
-	<meta name="repository" content="https://github.com/BenjaminAster/CSS-Canvas" />
+	<meta name="repository" content="https://github.com/BenjaminAster/CSS-Drawing-Canvas" />
+	<meta property="og:image" content="https://benjaminaster.com/css-canvas/assets/screenshot.png" />
 
 	<title>CSS Drawing Canvas</title>
 
@@ -23,49 +24,80 @@
 </head>
 
 <body>
-	<div class="info-container">
-		<div class="info">
+	<aside class="info">
+		<div class="inner-container">
 			<h1>CSS Drawing Canvas</h1>
 
-			<p>There is no JavaScript on this page. All the logic made 100% using pure HTML & CSS.</p>
+			<p>There is no JavaScript on this page. All logic is made 100% using pure HTML & CSS.</p>
+
+			<p>
+				| To edit the colors, simply type into the "Edit colors" input fiels.
+				| Any valid CSS color syntax is valid, including <a href="https://benjaminaster.com/colors/">named colors</a> and hex notation.
+			</p>
+
+			<div class="mobile-warning">
+				| This does not work on mobile. Please use a desktop computer instead.
+			</div>
+
+			<div>
+				<p>For the best performance,</p>
+				<ul>
+					<li>close DevTools</li>
+					<li>close other tabs</li>
+					<li>close resource-intensive applications</li>
+				</ul>
+			</div>
+
+			<p>
+				| View on <a href="https://github.com/BenjaminAster/CSS-Drawing-Canvas">GitHub</a>,
+				| <a href="https://codepen.io/Benjamin_Aster/pen/gOKwpOd">CodePen</a>,
+				| <a href="https://benjaminaster.com/css-canvas/">benjaminaster.com</a></p>
 		</div>
-	</div>
+	</aside>
 
-	each _, index in Array(colors)
-		<input type="radio" name="color" id="color-#{index}" !{index === 0 ? "checked" : ""} />
-	//- /each
+	<main>
+		<div class="inner-container">
+			each _, index in Array(colors)
+				<input type="radio" name="color" id="color-#{index}" !{index === 0 ? "checked" : ""} />
+			//- /each
 
-	<div class="color-chooser">
-		each _, index in Array(colors)
-			<label for="color-#{index}"></label>
-		//- /each
-	</div>
+			<div class="color-chooser">
+				each _, index in Array(colors)
+					<label for="color-#{index}"></label>
+				//- /each
+			</div>
 
-	<div class="canvas-container">
-		<div class="canvas">
-			for _, row in Array(rows)
-				for _, column in Array(columns)
-					<div class="pixel"></div>
-				//- /for
-			//- /for
-		</div>
-	</div>
-
-	<div class="color-settings-container">
-		<div class="color-settings">
-			- const defaultColors = ["white", "red", "lime"];
-			for _, index in Array(colors)
-				- const style = `:root { --color-${index}:\n${defaultColors[index]}`;
-				<div class="outer-style-container">
-					<div class="middle-style-container">
-						<div class="inner-style-container" id="color-#{index}-style">
-							<style contenteditable="true">!{style}</style>
-						</div>
-					</div>
+			<div class="canvas-container">
+				<div class="canvas">
+					for _, row in Array(rows)
+						for _, column in Array(columns)
+							<div class="pixel"></div>
+						//- /for
+					//- /for
 				</div>
-			//- /for
+			</div>
+
+			<h2 class="edit-colors-heading">
+				| Edit colors:
+			</h2>
+
+			<div class="color-settings-container">
+				<div class="color-settings">
+					- const defaultColors = ["red", "lime", "blue"];
+					for _, index in Array(colors)
+						- const style = `:root { --color-${index}:\n${defaultColors[index]}`;
+						<div class="outer-style-container">
+							<div class="middle-style-container">
+								<div class="inner-style-container" id="color-#{index}-style">
+									<style contenteditable="true">!{style}</style>
+								</div>
+							</div>
+						</div>
+					//- /for
+				</div>
+			</div>
 		</div>
-	</div>
+	</main>
 </body>
 
 </html>
