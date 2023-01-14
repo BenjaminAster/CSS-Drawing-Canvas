@@ -1,0 +1,13 @@
+{
+	"name": "CSS Drawing Canvas",
+	"short_name": "CSS Canvas",
+	"start_url": "./",
+	"scope": "./",
+	"display": "standalone",
+	"icons": [{
+		"src": "./assets/icon.png",
+		"type": "image/png",
+		"sizes": "512x512",
+		"purpose": "monochrome any"
+	}]
+}
